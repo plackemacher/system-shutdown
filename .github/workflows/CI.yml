@@ -11,7 +11,7 @@ on: [ push, pull_request ]
 
 jobs:
   build:
-    name: ${{ matrix.job.os }}
+    name: ${{ matrix.job.os }} (go ${{ matrix.go-version }})
     runs-on: ${{ matrix.job.os }}
 
     strategy:
