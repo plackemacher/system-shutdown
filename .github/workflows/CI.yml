@@ -1,0 +1,52 @@
+#############################################################################
+# Copyright (c) 2023 Pat Lackemacher (plackemacher) <patrick@lackemacher.com>
+# Copyright (c) 2022 Silvio Clecio (silvioprog) <silvioprog@gmail.com>
+#
+# SPDX-License-Identifier: MIT
+#############################################################################
+
+name: CI/CD
+
+on: [ push, pull_request ]
+
+jobs:
+  build:
+    name: ${{ matrix.job.os }}
+    runs-on: ${{ matrix.job.os }}
+
+    strategy:
+      matrix:
+        go-version: [ '1.18', '1.19', '1.20', '1.21' ]
+        job:
+          - os: ubuntu-22.04
+            test: false
+            publish: true
+
+          - os: macos-11
+            test: false
+
+          - os: macos-11
+
+          - os: windows-2022
+            test: false
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Install dependencies
+        run: go get .
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test
+        if: matrix.job.test
+        run: go test
